@@ -23,9 +23,9 @@ get_ipython().run_line_magic('matplotlib', 'inline')
 #read data into memory
 #set up correct directory... download data from https://www.kaggle.com/joniarroba/noshowappointments or link with API
 df=pd.read_csv("/Users/user/Downloads/noshowappointments-kagglev2-may-2016.csv")
+# I view the raw data with the 'head()' command.
 df.head()
 
-# I import the necessary packages and read the data into the system. I view the raw data with the 'head()' command.
 df.shape
 # The dataset has 110,527 observations and 14 variables.
 df.info()
@@ -45,8 +45,8 @@ df.info()
 df['no_show'].replace(('Yes', 'No'), (1, 0), inplace=True)
 #Change no show and gender to binary variables
 df['gender'].replace(('M', 'F'), (1, 0), inplace=True)
-#Rename incorrectly spelled column names and make all columns lowercase for convenience.
 df=df.rename(columns={'gender': "male"})
+
 df.nunique()
 #There are 62,299 unique patients in the dataset. Therefore, there are some observations represent multiple visits from the same patient since the dataset has 110,527 total observations.
 # check for duplicates in the data
@@ -60,12 +60,13 @@ df.hist(figsize=(15,15));
 # 3) a minority of patients receive a sms text message
 
 #Exploratory Data Analysis (I answer a few basic questions with the data)
-# What percent of appointments result in a 'no show'?
+
 df.no_show.mean()
 # On average, about 1 in every 5 appointments results in a 'no show'
 
 
-# I create a user written function to divide column values and tabulate them. I use it below to tabulate the appointments by neighborhood and appointment day.
+# I create a user written function to divide column values and tabulate them. I use it below to tabulate the appointments 
+# by neighborhood and appointment day.
 def tab(col_name):
     #Take a column, and separate with '|'
     tab = df[col_name].str.cat(sep = '|')    
@@ -77,16 +78,18 @@ def tab(col_name):
 
 hood = tab('neighbourhood')
 hood.head(10)
-#There are 81 neighbourhoods that appointments in this dataset are made from. We can see that many of the appointments come from the top 10 neighborhoods. Below I examine the bottom 10 neighborhoods.
+# There are 81 neighbourhoods that appointments in this dataset are made from. We can see that many of the appointments come from 
+# the top 10 neighborhoods. Below I examine the bottom 10 neighborhoods.
 hood.tail(10)
-#Relative to the top 10 neighborhoods, barely any appointments are made for the bottom 10. 
+# Relative to the top 10 neighborhoods, barely any appointments are made for the bottom 10. 
 
 day=tab('appointmentday')
 day
-#This dataset has 27 different appointment days. All days have at least 3000 appointments besides 2016-05-14 where only 39 appointments were recorded. This may be an error in the dataset. 
+# This dataset has 27 different appointment days. All days have at least 3000 appointments besides 2016-05-14 where only 39 
+# appointments were recorded. This may be an error in the dataset. 
 
-#Is there a difference between the genders for no shows?
-#Use query to select each group and get its mean 
+# I check if there is a difference between the genders for no shows.
+# Use query to select each group and get its mean 
 male = df.query('male ==1')
 female = df.query('male ==0')
 
@@ -102,12 +105,13 @@ print(str(format(mean_noshow_male*100,"0.2f"))
       + ' percent of females do not show')
 
 df.male.mean()
-#There is a very small difference between the percent of males and females missing appointments in the total sample. However, only 35 percent of the all appointments are for male patients so a greater proportion of the absolute amount of no shows are for females.
+# There is a very small difference between the percent of males and females missing appointments in the total sample. However, 
+# only 35 percent of the all appointments are for male patients so a greater proportion of the absolute amount of no shows are for females.
 
 
-#VISUAL REPRESENTATIONS OF THE DATA
+# VISUAL REPRESENTATIONS OF THE DATA
 
-# Create a bar chart on average likelihood of missed appointments by gender
+# I create a bar chart with of the likelihood of a No Show by gender
 locations = [1, 2]
 heights = [mean_noshow_male, mean_noshow_female]
 labels = ['Male', 'Female']
@@ -118,7 +122,7 @@ plt.ylabel('Likelihood of No Show');
 #The likelihood of missing an appointment appears to be almost the same for the genders.
 
 
-#Create a bar chart on counts of missed appointments by gender
+# I create a bar chart on counts of missed appointments by gender
 locations = [1, 2]
 heights = [count_noshow_male, count_noshow_female]
 labels = ['Male', 'Female']
@@ -129,8 +133,8 @@ plt.ylabel('Count of No Shows');
 #There are many money females missing appointments than males, in an absolute sense. However, as seen in the previous figure, both genders are almost just as likely to miss an appointment.
 
 
-#Are Scholarship (welfare) recipients less likely to show up for an appointment?
-#Query to select each group by scholarship status and get its mean
+# I check if scholarship (welfare) recipients less likely to show up for an appointment?
+# Query to select each group by scholarship status and get its mean
 scholarship = df.query('scholarship ==1')
 no_scholarship = df.query('scholarship ==0')
 
@@ -147,15 +151,15 @@ print(str(format(mean_noshow_sch*100,"0.2f"))
      'Scholarships are awarded to poor families. There may be transportation issues ' 
       + 'leading to more no shows, or there may be issues with reliability of the '
       + 'patients due to moral hazard (no having to bear the cost themselves).')
-#23.74 percent of scholarship recipients do not show up for their appointments while 19.81 percent of non-scholarship patients do not show. Scholarships are awarded to poor families. There may be transportation issues leading to more no shows, or there may be issues with reliability of the patients due to moral hazard (no having to bear the cost themselves).
+# 23.74 percent of scholarship recipients do not show up for their appointments while 19.81 percent of non-scholarship patients do not show. Scholarships are awarded to poor families. There may be transportation issues leading to more no shows, or there may be issues with reliability of the patients due to moral hazard (no having to bear the cost themselves).
 
 print('However, only ' 
       + str(format(df['scholarship'].mean()*100,"0.2f")) 
       + ' percent of the total patient population are on scholarship' 
       + ' so they are not driving the majority of no shows.')
-#However, only 9.83 percent of the total patient population are on scholarship so they are not driving the majority of no shows.
+# However, only 9.83 percent of the total patient population are on scholarship so they are not driving the majority of no shows.
 
-#Create a bar chart on average likelihood of missed appointment by scholarship status
+# I create a bar chart on average likelihood of missed appointment by scholarship status
 locations = [1, 2]
 heights = [mean_noshow_sch, mean_noshow_nosch]
 labels = ['Scholarhsip', 'No Scholarship']
@@ -165,7 +169,7 @@ plt.xlabel('Scholarship Status')
 plt.ylabel('Percent No Show');
 #Scholarship recipients are more likely to not show up for their appointments relative to non-scholarship recipients.
 
-# Create a bar chart on counts of no shows by scholarship status
+# I create a bar chart on counts of no shows by scholarship status
 locations = [1, 2]
 heights = [count_noshow_sch, count_noshow_nosch]
 labels = ['Scholarhsip', 'No Scholarship']
@@ -177,14 +181,14 @@ plt.ylabel('Count of No Show');
 
 
 # Is there a relationship between gender, welfare particpation, and no shows?
-#Query to select each group by scholarship status and gender to creat four subset dataframes
+# Query to select each group by scholarship status and gender to creat four subset dataframes
 df_male_sch=df.query('scholarship==1 & male==1')
 df_female_sch=df.query('scholarship==1 & male==0')
 
 df_male_nosch=df.query('scholarship==0 & male==1')
 df_female_nosch=df.query('scholarship==0 & male==0')
 
-#Compute the means of each respective df
+# Compute the means of each respective df
 mean_noshow_male_sch=df_male_sch.no_show.mean()
 
 mean_noshow_female_sch=df_female_sch.no_show.mean()
@@ -193,7 +197,7 @@ mean_noshow_male_nosch=df_male_nosch.no_show.mean()
 
 mean_noshow_female_nosch=df_male_nosch.no_show.mean()
 
-#Create a bar chart showing the likelihood of no show by gender and scholarship status 
+# Create a bar chart showing the likelihood of no show by gender and scholarship status 
 locations = [1, 2, 3, 4]
 heights = [mean_noshow_male_sch, mean_noshow_female_sch, 
            mean_noshow_male_nosch, mean_noshow_female_nosch]
@@ -205,7 +209,10 @@ plt.ylabel('Likelihood of No Show')
 fig = plt.gcf()
 fig.set_size_inches(15, 10)
 fig;
-#Females on Scholarship are most likely to miss their appointments relative to all others. Male scholarship recipients are more likely to miss their appointment than either gender with no scholarship. There is not a visually distinguishable difference between the genders and the likelihood of missing an appointment for the no scholarship group.
+#Females on Scholarship are most likely to miss their appointments relative to all others. 
+# Male scholarship recipients are more likely to miss their appointment than either gender 
+# with no scholarship. There is not a visually distinguishable difference between the genders 
+# and the likelihood of missing an appointment for the no scholarship group.
 
 
 #create multi-dimension box plot figure with gender, age, and no show.
